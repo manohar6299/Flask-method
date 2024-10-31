@@ -1,14 +1,11 @@
 from flask import Flask, request, render_template, redirect, session, url_for
-
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy  # Import SQLAlchemy
 import bcrypt
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
 from functools import wraps
 from datetime import datetime
 from flask_cors import CORS
-
-
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -18,7 +15,7 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'manohar6299254553@gmail.com'
 app.config['MAIL_PASSWORD'] = 'jyyzfpexrfrpcnmm'
 app.config['MAIL_DEFAULT_SENDER'] = 'your-email@gmail.com'
-db = SQLAlchemy(app)
+db = SQLAlchemy(app)  # Initialize SQLAlchemy
 mail = Mail(app)
 app.secret_key = 'man_mn'
 CORS(app)
@@ -52,10 +49,6 @@ class Course(db.Model):
         self.description = description
         self.video_url = video_url
 
-    # def check_password(self, password):
-    #     return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
-
-
 with app.app_context():
     db.create_all()
 
@@ -67,7 +60,6 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -75,7 +67,6 @@ def login_required(f):
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
-
 
 @app.route('/admin', methods=['GET', 'POST'])
 @admin_required
@@ -102,7 +93,6 @@ def delete_course(course_id):
     db.session.commit()  # Save changes
     return redirect(url_for('admin_dashboard'))  # Redirect to the admin dashboard
 
-
 @app.route('/edit_course/<int:course_id>', methods=['GET', 'POST'])
 @admin_required
 def edit_course(course_id):
@@ -117,11 +107,6 @@ def edit_course(course_id):
         return redirect(url_for('admin_dashboard'))
 
     return render_template('edit_course.html', course=course)
-
-
-
-
-
 
 @app.route('/')
 def get_start():
@@ -168,6 +153,7 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html')
+
 @app.route('/navbar')
 @login_required
 def navbar():
@@ -237,14 +223,12 @@ def reset_with_token(token):
         if new_password != confirm_password:
             return render_template('reset_with_token.html', token=token, error='Passwords do not match.')
 
-
         user = Users.query.filter_by(email=email).first()
         user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         db.session.commit()
         return redirect('/login')
 
     return render_template('reset_with_token.html', token=token)
-
 
 @app.route('/logout')
 def logout():
