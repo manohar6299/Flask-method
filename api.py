@@ -55,6 +55,7 @@ class Course(db.Model):
     # def check_password(self, password):
     #     return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
 
+
 with app.app_context():
     db.create_all()
 
